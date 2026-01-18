@@ -1,0 +1,19 @@
+{
+  "artists": [
+    {
+      "id": 0,
+      "name": "kirsch",
+      "photo": "covers/Cazier.jpg",
+      "bio": "Nu va comparati !!"
+    }
+  ],
+  "songs": [
+    {
+      "id": 0,
+      "title": "CAZIER",
+      "artistId": 0,
+      "cover": "covers/Cazier.jpg",
+      "url": "songs/Cazier.wav"
+    }
+  ]
+}
