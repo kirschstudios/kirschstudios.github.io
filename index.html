@@ -141,6 +141,7 @@
             position: relative;
             z-index: 1;
             overflow: hidden;
+            touch-action: manipulation; /* Prevent double-tap delay on mobile */
         }
         
         /* Hover glow effect */
@@ -341,6 +342,7 @@
             width: 36px;
             height: 36px;
             position: relative;
+            touch-action: manipulation; /* Prevent double-tap delay on mobile */
         }
         
         /* Button glow on hover */
@@ -621,6 +623,7 @@
             position: relative;
             transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
             --bg-image: none;
+            touch-action: manipulation; /* Prevent double-tap delay on mobile */
         }
         
         .song-item.initial-load {
@@ -1351,6 +1354,7 @@
             transition: all 0.4s var(--ease);
             position: relative;
             overflow: hidden;
+            touch-action: manipulation; /* Prevent double-tap delay on mobile */
         }
 
         .category-card::before {
@@ -2956,6 +2960,12 @@
         }
 
         // Load data and start the app
+        // --- FIX DOUBLE-TAP ISSUE ON MOBILE ---
+        // Prevent hover-first-click-second behavior on touch devices
+        if ('ontouchstart' in window) {
+            document.addEventListener('touchstart', function() {}, {passive: true});
+        }
+
         loadData();
     </script>
 </body>
