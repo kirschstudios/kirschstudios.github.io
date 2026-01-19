@@ -1815,6 +1815,20 @@
                 font-size: 1.5rem;
             }
         }
+
+        /* --- DISABLE HOVER ON TOUCH-ONLY DEVICES --- */
+        /* This prevents sticky hover states on mobile after tapping */
+        @media (hover: none) {
+            *:hover {
+                /* Disable all hover effects on touch devices */
+                color: inherit !important;
+                background: inherit !important;
+                transform: inherit !important;
+                opacity: inherit !important;
+                box-shadow: inherit !important;
+                filter: inherit !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1836,14 +1850,6 @@
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                 <line x1="12" y1="19" x2="12" y2="23"></line>
                 <line x1="8" y1="23" x2="16" y2="23"></line>
-            </symbol>
-            <symbol id="icon-playlist" viewBox="0 0 24 24">
-                <line x1="8" y1="6" x2="21" y2="6"></line>
-                <line x1="8" y1="12" x2="21" y2="12"></line>
-                <line x1="8" y1="18" x2="21" y2="18"></line>
-                <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                <line x1="3" y1="18" x2="3.01" y2="18"></line>
             </symbol>
             <symbol id="icon-shuffle" viewBox="0 0 24 24">
                 <polyline points="16 3 21 3 21 8"></polyline>
@@ -1905,10 +1911,6 @@
                     <svg class="icon icon-lg"><use href="#icon-mic"></use></svg>
                     <span>Artists</span>
                 </div>
-                <div class="nav-item" onclick="switchView('playlists', event)">
-                    <svg class="icon icon-lg"><use href="#icon-playlist"></use></svg>
-                    <span>Playlists</span>
-                </div>
             </nav>
         </aside>
 
@@ -1966,16 +1968,6 @@
                 <!-- Content will be dynamically generated -->
             </div>
 
-            <!-- Playlists View -->
-            <div class="view" id="view-playlists">
-                <header>
-                    <h1>Playlists</h1>
-                    <p>Your curated collections</p>
-                </header>
-                <div class="container">
-                    <p style="color: var(--text-muted); padding: 0 1.5rem;">Coming soon...</p>
-                </div>
-            </div>
         </main>
     </div>
 
@@ -2190,8 +2182,7 @@
                 const navMap = {
                     'home': 0,
                     'discover': 1,
-                    'artists': 2,
-                    'playlists': 3
+                    'artists': 2
                 };
                 if (navMap[viewName] !== undefined) {
                     navItems[navMap[viewName]].classList.add('active');
@@ -2442,6 +2433,9 @@
                 bottomCurrentTime.innerText = formatTime(cur);
                 bottomDuration.innerText = formatTime(dur);
             }
+            
+            // Update Media Session position state for native controls
+            updateMediaSessionPositionState();
         });
 
         audioPlayer.addEventListener('ended', () => {
@@ -2459,6 +2453,13 @@
                 updateBottomPlayer();
                 document.getElementById('playPauseIcon').innerText = '▶';
                 updateNavigationButtons();
+            }
+        });
+
+        // Update media session when metadata is loaded (duration is available)
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            if (currentPlayingId !== null) {
+                updateMediaSessionPositionState();
             }
         });
 
@@ -2483,8 +2484,91 @@
                 bottomCover.src = song.cover;
                 bottomTitle.innerText = song.title;
                 bottomArtist.innerText = getArtistName(song.artistId);
+                
+                // Update Media Session API for native mobile controls
+                updateMediaSession(song);
             } else {
                 bottomPlayer.classList.remove('active');
+                // Clear media session when no song is playing
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.metadata = null;
+                }
+            }
+        }
+
+        // --- MEDIA SESSION API for Mobile Native Controls ---
+        function updateMediaSession(song) {
+            if ('mediaSession' in navigator) {
+                const artistName = getArtistName(song.artistId);
+                
+                // Set metadata (title, artist, album, artwork)
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: song.title,
+                    artist: artistName,
+                    album: 'Kirsch Studios',
+                    artwork: [
+                        { src: song.cover, sizes: '512x512', type: 'image/jpeg' },
+                        { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
+                        { src: song.cover, sizes: '128x128', type: 'image/jpeg' },
+                        { src: song.cover, sizes: '96x96', type: 'image/jpeg' }
+                    ]
+                });
+
+                // Set up action handlers for native controls
+                navigator.mediaSession.setActionHandler('play', () => {
+                    audioPlayer.play();
+                    updateIcon(currentPlayingId, 'pause');
+                    toggleVisualizer(currentPlayingId, true);
+                    document.getElementById('playPauseIcon').innerText = '⏸';
+                });
+
+                navigator.mediaSession.setActionHandler('pause', () => {
+                    audioPlayer.pause();
+                    updateIcon(currentPlayingId, 'play');
+                    toggleVisualizer(currentPlayingId, false);
+                    document.getElementById('playPauseIcon').innerText = '▶';
+                });
+
+                navigator.mediaSession.setActionHandler('previoustrack', () => {
+                    bottomPrevious();
+                });
+
+                navigator.mediaSession.setActionHandler('nexttrack', () => {
+                    bottomNext();
+                });
+
+                // Seek controls for the native progress bar
+                navigator.mediaSession.setActionHandler('seekto', (details) => {
+                    if (details.seekTime && audioPlayer.duration) {
+                        audioPlayer.currentTime = details.seekTime;
+                    }
+                });
+
+                navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+                    const skipTime = details.seekOffset || 10;
+                    audioPlayer.currentTime = Math.max(audioPlayer.currentTime - skipTime, 0);
+                });
+
+                navigator.mediaSession.setActionHandler('seekforward', (details) => {
+                    const skipTime = details.seekOffset || 10;
+                    audioPlayer.currentTime = Math.min(audioPlayer.currentTime + skipTime, audioPlayer.duration);
+                });
+
+                // Update position state for seek bar
+                updateMediaSessionPositionState();
+            }
+        }
+
+        // Update the position state for the native seek bar
+        function updateMediaSessionPositionState() {
+            if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+                if (audioPlayer.duration && !isNaN(audioPlayer.duration)) {
+                    navigator.mediaSession.setPositionState({
+                        duration: audioPlayer.duration,
+                        playbackRate: audioPlayer.playbackRate,
+                        position: audioPlayer.currentTime
+                    });
+                }
             }
         }
 
