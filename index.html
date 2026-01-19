@@ -1833,13 +1833,57 @@
         /* This prevents sticky hover states on mobile after tapping */
         @media (hover: none) {
             *:hover {
-                /* Disable all hover effects on touch devices */
-                color: inherit !important;
-                background: inherit !important;
-                transform: inherit !important;
-                opacity: inherit !important;
-                box-shadow: inherit !important;
-                filter: inherit !important;
+                /* Reset hover effects on touch devices without using inherit */
+                animation: none !important;
+            }
+            
+            /* Specifically disable common hover transforms and effects */
+            .nav-item:hover,
+            .bottom-btn:hover,
+            .bottom-cover:hover,
+            .song-item:hover,
+            .song-item:hover .cover-art,
+            .song-item:hover .play-btn-wrapper,
+            .artist-card:hover,
+            .artist-card:hover .artist-photo,
+            .back-btn:hover,
+            .hero-cta:hover,
+            .category-card:hover,
+            .popular-song-card:hover,
+            .popular-song-card:hover .popular-cover,
+            .popular-artist-card:hover,
+            .popular-artist-card:hover .popular-artist-photo,
+            .progress-track:hover,
+            .loop-btn:hover,
+            .volume-btn:hover {
+                transform: none !important;
+            }
+            
+            .nav-item:hover::before,
+            .bottom-btn:hover::before,
+            .artist-card:hover::before,
+            .hero-cta:hover::before,
+            .category-card:hover::before,
+            .popular-song-card:hover::before,
+            .popular-artist-card:hover::before {
+                opacity: 0 !important;
+            }
+            
+            /* Prevent hover effects on covers and images */
+            .bottom-cover:hover,
+            .cover-art:hover,
+            .artist-photo:hover,
+            .popular-cover:hover,
+            .popular-artist-photo:hover {
+                box-shadow: none !important;
+                filter: none !important;
+            }
+            
+            /* Prevent hover thumb visibility */
+            .bottom-progress-track:hover .bottom-progress-thumb,
+            .progress-track:hover .progress-thumb {
+                opacity: 0 !important;
+                transform: none !important;
             }
         }
     </style>
