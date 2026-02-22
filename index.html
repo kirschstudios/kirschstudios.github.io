@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kirsch Studios</title>
     <style>
-        /* --- 1. CORE VARIABLES --- */
         :root {
             --bg-deep: #050505;
             --text-main: #ffffff;
@@ -18,7 +17,12 @@
             --ease: cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', -apple-system, sans-serif; 
+        }
 
         html {
             background-color: var(--bg-deep);
@@ -34,7 +38,6 @@
             position: relative;
         }
 
-        /* Animated background gradient */
         body::before {
             content: "";
             position: fixed;
@@ -54,7 +57,6 @@
             50% { opacity: 0.6; }
         }
 
-        /* Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -63,7 +65,6 @@
             z-index: 1;
         }
 
-        /* --- HERO SECTION --- */
         .hero {
             text-align: center;
             padding: 100px 0 80px;
@@ -110,7 +111,6 @@
             animation: fadeInUp 0.8s ease-out 0.3s both;
         }
 
-        /* --- SECTIONS --- */
         section {
             margin-bottom: 120px;
             animation: fadeInUp 0.8s ease-out both;
@@ -139,7 +139,6 @@
             border-radius: 2px;
         }
 
-        /* --- DESPRE MINE --- */
         .about-content {
             background: var(--card-glass);
             backdrop-filter: blur(20px);
@@ -172,7 +171,6 @@
             z-index: 1;
         }
 
-        /* --- PROJECTS GRID --- */
         .project-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -265,7 +263,6 @@
             box-shadow: 0 15px 40px rgba(56, 189, 248, 0.2);
         }
 
-        /* --- CONTACT/CONNECT --- */
         .connect-content {
             text-align: center;
             background: var(--card-glass);
@@ -328,7 +325,6 @@
             box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3);
         }
 
-        /* --- FOOTER --- */
         footer {
             margin-top: 120px;
             padding: 40px 0;
@@ -341,7 +337,6 @@
             font-size: 0.95rem;
         }
 
-        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
             .container {
                 padding: 60px 20px;
@@ -386,7 +381,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Hero Section -->
         <section class="hero">
             <h1>Kirsch Studios</h1>
             <p class="description">
@@ -395,7 +389,6 @@
             </p>
         </section>
 
-        <!-- Proiecte Section -->
         <section id="proiecte">
             <h2 class="section-title">Proiectele Mele</h2>
             <div class="project-grid">
@@ -425,7 +418,6 @@
             </div>
         </section>
 
-        <!-- Contact Section -->
         <section id="contact">
             <h2 class="section-title">Contact</h2>
             <div class="connect-content">
@@ -438,7 +430,6 @@
             </div>
         </section>
 
-        <!-- Footer -->
         <footer>
             <p>&copy; 2026 Kirsch Studios. Toate drepturile rezervate.</p>
         </footer>
